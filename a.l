@@ -29,22 +29,23 @@ digit [0-9]
 {digit}+.{digit}+ {yylval = strdup(yytext);return FLOAT;}
 {alpha}({alpha}|{digit})* {yylval = strdup(yytext);return ID;}
 \".*\" {yylval = strdup(yytext);return STRING;}
-"<" {yylval = strdup(yytext);return lt;}
-">"     {yylval = strdup(yytext);return gt;}
-"="     {yylval = strdup(yytext);return assign;}
-"<="    {yylval = strdup(yytext);return lteq;}
-">="    {yylval = strdup(yytext);return gteq;}
-"=="    {yylval = strdup(yytext);return equal;}
-"!="    {yylval = strdup(yytext);return neq;}
-"+"     {yylval = strdup(yytext);return add;}
-"-"     {yylval = strdup(yytext);return sub;}
-"*"     {yylval = strdup(yytext);return mul;}
-"/"     {yylval = strdup(yytext);return div;}
-"++"    {yylval = strdup(yytext);return incr;}
-"--"    {yylval = strdup(yytext);return decr;}
-"!"     {yylval = strdup(yytext);return not;}
-"||"    {yylval = strdup(yytext);return or;}
-"&&"    {yylval = strdup(yytext);return and;}
+"<" {yylval = strdup(yytext);return LT;}
+">"     {yylval = strdup(yytext);return GT;}
+"="     {yylval = strdup(yytext);return ASSIGN;}
+"<="    {yylval = strdup(yytext);return LTEQ;}
+">="    {yylval = strdup(yytext);return GTEQ;}
+"=="    {yylval = strdup(yytext);return EQUAL;}
+"!="    {yylval = strdup(yytext);return NEQ;}
+"+"     {yylval = strdup(yytext);return ADD;}
+"-"     {yylval = strdup(yytext);return SUB;}
+"*"     {yylval = strdup(yytext);return MUL;}
+"/"     {yylval = strdup(yytext);return DIV;}
+"%"     {yylval = strdup(yytext);return MOD;}
+"++"    {yylval = strdup(yytext);return INCRE;}
+"--"    {yylval = strdup(yytext);return DECR;}
+"!"     {yylval = strdup(yytext);return NOT;}
+"||"    {yylval = strdup(yytext);return OR;}
+"&&"    {yylval = strdup(yytext);return AND;}
 
 
 .    return yytext[0];
