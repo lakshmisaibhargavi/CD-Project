@@ -1,13 +1,14 @@
 %{
 #include<stdio.h>
 %}
-%token NUMBER IF NEQ COUT
+%token NUMBER IF COUT LT GT ASSIGN LTEQ GTEQ EQUAL NEQ ADD SUB MUL DIV
 %left '-' '+'
 %left '*' '/'
 %nonassoc UMINUS
+
 %%
-S: IF '(' E ')' 
-{
+
+S: IF '(' E ')' {
     if($3)
     {
         printf("true %d\n",$3);
@@ -17,19 +18,31 @@ S: IF '(' E ')'
         printf("false %d\n",$3);
     }
 }
+| E { printf("sum is: %d",$1);}
 ;
 
-E: E'+'E { $$ = $1 + $3; }
-| E'-'E { $$ = $1 - $3; }
-| E'*'E { $$ = $1 * $3; }
-| E'/'E { if($3 == 0)
-yyerror("Divide by zero");
-else
-$$ = $1 / $3; }
+E: E ADD E { $$ = $1 + $3; }
+| E SUB E { $$ = $1 - $3; }
+| E MUL E { $$ = $1 * $3; }
+| E DIV E { if($3 == 0)yyerror("Divide by zero");else$$ = $1 / $3; }
 | '-'E %prec UMINUS { $$ = -$2; }
 | '(' E ')' { $$ = $2; }
-| E '<' E 
-{ 
+| R { $$ = $1; }
+| NUMBER { $$ = $1; }
+;
+
+R: R GT R { 
+    if($$ = $1 > $3)
+    {
+        printf("true\n");
+    }
+    else
+    {
+        printf("false\n");
+    }
+    } 
+
+| R LT R  { 
     if($$ = $1 < $3)
     {
         printf("true\n");
@@ -39,17 +52,7 @@ $$ = $1 / $3; }
         printf("false\n");
     }
     } 
-| E '>' E { 
-    if($$ = $1 > $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    }
-| E NEQ E { 
+| R NEQ R { 
     if($$ = $1 != $3)
     {
         printf("true\n");
@@ -59,8 +62,8 @@ $$ = $1 / $3; }
         printf("false\n");
     }
     }
-| E '=''=' E { 
-    if($$ = $1 == $4)
+| R EQUAL R { 
+    if($$ = $1 == $3)
     {
         printf("true\n");
     }
@@ -69,9 +72,29 @@ $$ = $1 / $3; }
         printf("false\n");
     }
     }
-
+| R LTEQ R { 
+    if($$ = $1 <= $3)
+    {
+        printf("true\n");
+    }
+    else
+    {
+        printf("false\n");
+    }
+    }
+| R GTEQ R { 
+    if($$ = $1 >= $3)
+    {
+        printf("true\n");
+    }
+    else
+    {
+        printf("false\n");
+    }
+    }
 | NUMBER {$$ = $1;}
 ;
+
 %%
 int main()
 {
