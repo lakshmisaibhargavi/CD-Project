@@ -1,108 +1,151 @@
 %{
 #include<stdio.h>
+#include<ctype.h>
 %}
-%token NUMBER IF COUT LT GT ASSIGN LTEQ GTEQ EQUAL NEQ ADD SUB MUL DIV
+%token NUMBER INCLUDE LT GT HEADER VOID MAINFUNC COUT STRING INT ID ASSIGN IF ELSE WHILE FOR
 %left '-' '+'
 %left '*' '/'
-%nonassoc UMINUS
-
 %%
+S : INCLUDE LT HEADER GT MAIN {printf("included");}
+  ;
+MAIN : VOID MAINFUNC BODY
+     ;
+BODY : '{' STMT_LT '}'
+     ;
+STMT_LT : STMT  STMT_LT  
+         | 
+         ;
+STMT :  PRINT  {$$=$1;}
+     | ASSIGN_EXP ';'
+     | IF_STMT 
+     | W
+     | F
+      ;
 
-S: IF '(' E ')' {
-    if($3)
-    {
-        printf("true %d\n",$3);
-    }
-    else
-    {
-        printf("false %d\n",$3);
-    }
-}
-| E { printf("sum is: %d",$1);}
+
+PRINT: COUT LT LT E ';' {$$ = $4;printf("%d",$4); }
+| COUT LT LT STRING ';' {$$ = $4; printf("%s",$4);}
 ;
 
-E: E ADD E { $$ = $1 + $3; }
-| E SUB E { $$ = $1 - $3; }
-| E MUL E { $$ = $1 * $3; }
-| E DIV E { if($3 == 0)yyerror("Divide by zero");else$$ = $1 / $3; }
-| '-'E %prec UMINUS { $$ = -$2; }
+ASSIGN_EXP: ID ASSIGN E 
+          | DT ID ASSIGN E 
+          ;
+
+DT : INT 
+     ;
+
+COMP: NUMBER GT NUMBER {if($1 > $3)
+                        {
+                            $$ = 1;
+                        }
+                        else
+                        {
+                            $$ = 0;
+                        };}
+| NUMBER LT NUMBER {if($1 < $3)
+                        {
+                            $$ = 1;
+                        }
+                        else
+                        {
+                            $$ = 0;
+                        };}
+;
+IF_STMT: IF '(' COMP ')' '{' PRINT '}' ELSE '{' PRINT '}'  {if($3==1)
+                                        {
+                                             
+                                           if(isdigit($6)==0){
+                                                printf("%s",$6);
+                                             
+                                           }else{
+                                                 printf("%d",$6);
+                                           }
+                                            
+                                        }
+                                        else
+                                        {
+                                            if(isdigit($10)==0){
+                                              printf("%s",$10);
+                                           }else{
+                                                printf("%d",$10);
+                                           }
+                                        }
+                                       ;}
+ | IF '(' COMP ')' '{' PRINT '}' {
+                                   if($3==1)
+                                   {
+                                             
+                                           if(isdigit($6)==0){
+                                                printf("%s",$6);
+                                             
+                                           }else{
+                                                 printf("%d",$6);
+                                           }
+                                            
+                                        }
+ ;}
+;
+
+W: WHILE '(' NUMBER LT NUMBER ')' '{' PRINT '}' {
+     int x = $3;
+     int y = $5;
+     while(x<y){
+           if(isdigit($6)==0){
+                                                printf("%s",$8);
+                                             
+                                           }else{
+                                                 printf("%d",$8);
+                                           }
+     x++;
+     }
+;}
+| WHILE '(' NUMBER GT NUMBER ')' '{' PRINT '}' {
+     int x = $3;
+     int y = $5;
+     while(x>y){
+           if(isdigit($6)==0){
+                                                printf("%s",$8);
+                                             
+                                           }else{
+                                                 printf("%d",$8);
+                                           }
+     x--;
+     }
+;}
+;
+
+F: FOR '(' INT ID ASSIGN NUMBER ';' ID LT NUMBER ';' ID '+' '+' ')' '{' PRINT '}' {
+        int i;
+        for(i=$6;i<$10;i++){
+              printf("%s",$17);
+          }
+     ;}
+| FOR '(' INT ID ASSIGN NUMBER ';' ID GT NUMBER ';' ID '-' '-' ')' '{' PRINT '}' {
+        int i;
+        for(i=$6;i>$10;i--){
+              printf("%s",$17);
+          }
+     ;}  
+
+
+
+E: E '+' E { $$ = $1 + $3; }
+| E '-' E { $$ = $1 - $3; }
+| E '*' E { $$ = $1 * $3; }
+| E '/' E { if($3 == 0)yyerror("Divide by zero");else$$ = $1 / $3; }
 | '(' E ')' { $$ = $2; }
-| R { $$ = $1; }
 | NUMBER { $$ = $1; }
 ;
 
-R: R GT R { 
-    if($$ = $1 > $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    } 
-
-| R LT R  { 
-    if($$ = $1 < $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    } 
-| R NEQ R { 
-    if($$ = $1 != $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    }
-| R EQUAL R { 
-    if($$ = $1 == $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    }
-| R LTEQ R { 
-    if($$ = $1 <= $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    }
-| R GTEQ R { 
-    if($$ = $1 >= $3)
-    {
-        printf("true\n");
-    }
-    else
-    {
-        printf("false\n");
-    }
-    }
-| NUMBER {$$ = $1;}
-;
-
 %%
-int main()
-{
+int main(){
 yyparse();
 }
 int yywrap(){
 return 1;
 }
-void yyerror(char *s){
-printf("Error %s",s);exit(0);
+int yyerror(char *s){
+printf("Error %s",s);
+exit(0);
+return 0;
 }
